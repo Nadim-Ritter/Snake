@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#move" prefHeight="400.0" prefWidth="600.0" style="-fx-border-width: 2;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="snake.GuiController">
+   <children>
+      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#start" text="Start" />
+      <Pane fx:id="playField" layoutX="15.0" layoutY="56.0" prefHeight="330.0" prefWidth="570.0" style="-fx-background-color: AQUAMARINE;">
+         <children>
+            <Rectangle fx:id="snakeHead" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="15.0" layoutX="60.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
