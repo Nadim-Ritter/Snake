@@ -36,22 +36,24 @@ public class GuiController implements Initializable {
     Pane playField;
 
     Timeline timeline = new Timeline();
-    ArrayList<Rectangle> snakeBody = new ArrayList();
-    
+    ArrayList<Rectangle> snake = new ArrayList();
+
     String direction;
     Rectangle food;
     double size = 15;
-    
+
     @FXML
     public void start() {
         spawnFood();
+        snake.add(snakeHead);
 
         KeyFrame frame = new KeyFrame(Duration.seconds(0.2), event -> {
-            snakeHead.setTranslateX(snakeHead.getTranslateX() + size);
-            if (snakeHead.getTranslateX() + size >= 570 - (snakeHead.getLayoutX())) {
-                timeline.stop();
+            for (Rectangle snake1 : snake) {
+                snake1.setTranslateX(snake1.getTranslateX() + size);
+                if (snake1.getTranslateX() + size >= 570 - (snake1.getLayoutX())) {
+                    timeline.stop();
+                }
             }
-
         });
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -81,90 +83,108 @@ public class GuiController implements Initializable {
         KeyFrame frame = new KeyFrame(Duration.seconds(0.2), event -> {
 
             if (direction.equals("right")) {
-                snakeHead.setTranslateX(snakeHead.getTranslateX() + size);
-                if (snakeHead.getTranslateX() + size >= 570 - (snakeHead.getLayoutX())) {
-                    timeline.stop();
+//                snakeHead.setTranslateX(snakeHead.getTranslateX() + size);
+//                if (snakeHead.getTranslateX() + size >= 570 - (snakeHead.getLayoutX())) {
+//                    timeline.stop();
+//                }
+                for (Rectangle snake1 : snake) {
+                    snake1.setTranslateX(snake1.getTranslateX() + size);
+                    if (snake1.getTranslateX() + size >= 570 - (snake1.getLayoutX())) {
+                        timeline.stop();
+                    }
                 }
 
             } else if (direction.equals("left")) {
-                snakeHead.setTranslateX(snakeHead.getTranslateX() - size);
-                if (snakeHead.getTranslateX() <= -(snakeHead.getLayoutX())) {
-                    timeline.stop();
+                for (Rectangle snake1 : snake) {
+                    snake1.setTranslateX(snake1.getTranslateX() - size);
+                    if (snake1.getTranslateX() <= -(snake1.getLayoutX())) {
+                        timeline.stop();
+                    }
                 }
 
             } else if (direction.equals("up")) {
-                snakeHead.setTranslateY(snakeHead.getTranslateY() - size);
-                if (snakeHead.getTranslateY() <= -(snakeHead.getLayoutY())) {
-                    timeline.stop();
+                for (Rectangle snake1 : snake) {
+                    snake1.setTranslateY(snake1.getTranslateY() - size);
+                    if (snake1.getTranslateY() <= -(snake1.getLayoutY())) {
+                        timeline.stop();
+                    }
                 }
 
             } else if (direction.equals("down")) {
-                snakeHead.setTranslateY(snakeHead.getTranslateY() + size);
-                if (snakeHead.getTranslateY() + size >= 330 - (snakeHead.getLayoutY())) {
-                    timeline.stop();
+                for (Rectangle snake1 : snake) {
+                    snake1.setTranslateY(snake1.getTranslateY() + size);
+                    if (snake1.getTranslateY() + size >= 330 - (snake1.getLayoutY())) {
+                        timeline.stop();
+                    }
                 }
+
             }
-            
-            if(detectFood(snakeHead.getTranslateX(), snakeHead.getTranslateY())){
-                System.out.println("COLLISION");
+            if (detectFood(snakeHead.getTranslateX() + snakeHead.getLayoutX(), snakeHead.getTranslateY() + snakeHead.getLayoutY())) {
+                playField.getChildren().remove(food);
+                spawnFood();
+                addSnakeBody();
             }
-            
 
         });
 
-        
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
     }
-    
+
     @FXML
-    public void spawnFood(){
+    public void addSnakeBody() {
+        System.out.println(snake.get(snake.size() - 1).getTranslateX() - size);
+        Rectangle snakeBody = new Rectangle();
+        
+        snakeBody.setX(snake.get(0).getX() - ((snake.size()-1)*size));
+        
+        
+        
+        
+        snakeBody.setWidth(size);
+        snakeBody.setHeight(size);
+        snakeBody.setFill(Paint.valueOf("#1e90ff"));
+        snakeBody.setStroke(Paint.valueOf("000000"));
+        snakeBody.setStrokeWidth(1);
+        snakeBody.setStrokeType(StrokeType.INSIDE);
+
+        snake.add(snakeBody);
+        playField.getChildren().add(snakeBody);
+
+    }
+
+    @FXML
+    public void spawnFood() {
         Random r = new Random();
-        
-        int x = r.nextInt(585) + 15;
-        int y = r.nextInt(386) + 56;
-        
-        food = new Rectangle(210, 300, size, size);
+
+        int x = r.nextInt(570) + 1;
+        int y = r.nextInt(330) + 1;
+
+        food = new Rectangle(x, y, size, size);
         food.setFill(Paint.valueOf("#ffcc1f"));
         food.setStroke(Paint.valueOf("000000"));
         food.setStrokeWidth(1);
         food.setStrokeType(StrokeType.INSIDE);
-        
-        pane.getChildren().add(food);
+
+        playField.getChildren().add(food);
 
     }
-    
+
     @FXML
-    public boolean detectFood(double snakeX, double snakeY){
+    public boolean detectFood(double snakeX, double snakeY) {
         boolean detection = false;
-        System.out.println("snakeX: " + snakeX);
-        System.out.println("snakeY: " + snakeY);
-        
-        System.out.println("foodX: " + food.getX());
-        System.out.println("foodY: " + food.getY());
-        
-            if(snakeX >= food.getX()+size && snakeX+size <= food.getX() && snakeY >= food.getY()+size && snakeY+size <= food.getY()){
-                detection = true;
-            
-            
+        if ((snakeX == food.getX() && snakeY == food.getY()) || (snakeX + size >= food.getX() && snakeY + size >= food.getY() && snakeX <= food.getX() + size && snakeY <= food.getY() + size)) {
+            detection = true;
+
 //            if(snakeX > food.getX() && (snakeY == food.getY() || (snakeY >= food.getY()-(size-1) && snakeY <= food.getY()+(size*2)-1))){
 //                detection = true;
 //            }  
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        return detection;       
+
+        return detection;
     }
-    
 
     @FXML
     public void registerKeys(KeyEvent key) {
